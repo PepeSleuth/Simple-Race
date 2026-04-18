@@ -1,0 +1,5 @@
+- Minimum viable racing game, implemented in Godot
+- Physics code in [vehicle/vehicle.gd](vehicle/vehicle.gd)
+- Presentation video: https://www.youtube.com/watch?v=TNVzTZh7JI4
+- Presentation transcript: https://gist.github.com/PepeSleuth/19699b245f851fd80ec00f19efad246a
+- TODO: Write comprehensive README
