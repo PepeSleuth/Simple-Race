@@ -1,0 +1,490 @@
+[gd_scene format=3 uid="uid://col4kpivuxhn6"]
+
+[ext_resource type="Texture2D" uid="uid://doju6s5rjj8de" path="res://ui/circle.png" id="2_r3r3k"]
+[ext_resource type="Texture2D" uid="uid://cenns1b4sewtn" path="res://ui/arrows.png" id="3_blcw0"]
+[ext_resource type="Texture2D" uid="uid://btrb58ca7puxx" path="res://ui/shift.png" id="4_3dlgs"]
+[ext_resource type="PackedScene" uid="uid://w1hss1c38jwh" path="res://vehicle/car_tire.glb" id="5_50g4q"]
+[ext_resource type="PackedScene" uid="uid://rr8yet1hyphd" path="res://vehicle/car_body.glb" id="5_blcw0"]
+[ext_resource type="Texture2D" uid="uid://cqik6lx771o1u" path="res://ui/bs.png" id="5_vte5o"]
+[ext_resource type="Texture2D" uid="uid://bhtwbb10e6qf4" path="res://ui/circle_big.png" id="6_vte5o"]
+[ext_resource type="Script" uid="uid://xq0ngrkdqc4" path="res://ui/fullscreen.gd" id="7_po8fv"]
+[ext_resource type="Material" uid="uid://buud3ogulmtlk" path="res://vehicle/brake_light.tres" id="9_blcw0"]
+[ext_resource type="Script" uid="uid://br6h56k4ognn" path="res://vehicle/engine_sound.gd" id="10_qt76e"]
+[ext_resource type="AudioStream" uid="uid://c7863mrjhpwok" path="res://vehicle/engine_sample.wav" id="10_sq7yr"]
+[ext_resource type="Script" uid="uid://u0iutmwglnll" path="res://addons/godot-free-look-camera-132062011edfce9399a489756064cfea880dad4c/free_look_camera.gd" id="13_blcw0"]
+[ext_resource type="Script" uid="uid://bnsn1ffptdd2e" path="res://vehicle/vehicle.gd" id="14_qt76e"]
+[ext_resource type="Script" uid="uid://cg4aquldxc08h" path="res://track/boost.gd" id="14_sq7yr"]
+[ext_resource type="Script" uid="uid://bxhf2tq0sacec" path="res://vehicle/chase_camera.gd" id="20_3dlgs"]
+[ext_resource type="PackedScene" uid="uid://deheq0cg1kiex" path="res://track/d14.glb" id="20_vte5o"]
+[ext_resource type="Script" uid="uid://dm310fn6aws2e" path="res://track/sector.gd" id="21_vte5o"]
+[ext_resource type="Script" uid="uid://tepbaur2o0b" path="res://race_manager.gd" id="22_po8fv"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_qwhpj"]
+ground_bottom_color = Color(0.64705884, 0.654902, 0.67058825, 1)
+
+[sub_resource type="Sky" id="Sky_qt76e"]
+sky_material = SubResource("ProceduralSkyMaterial_qwhpj")
+
+[sub_resource type="Environment" id="Environment_sq7yr"]
+background_mode = 2
+sky = SubResource("Sky_qt76e")
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_r3r3k"]
+friction = 0.0
+
+[sub_resource type="Curve" id="Curve_ub8w1"]
+_limits = [0.0, 1.0, 0.0, 450.0]
+_data = [Vector2(0, 1), 0.0, -0.012, 0, 1, Vector2(50, 0.4), -0.012, -0.004, 1, 1, Vector2(100, 0.2), -0.004, -0.001, 1, 1, Vector2(200, 0.1), -0.001, -0.0005, 1, 1, Vector2(300, 0.05), -0.0005, -0.007777778, 1, 1]
+point_count = 5
+metadata/_snap_enabled = true
+
+[sub_resource type="Curve" id="Curve_eji0w"]
+_limits = [0.0, 5.0, 0.0, 200.0]
+_data = [Vector2(0, 0), 0.0, 0.025, 0, 1, Vector2(200, 5), 0.025, 0.0, 1, 0]
+point_count = 2
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_r3r3k"]
+size = Vector3(2, 0.5, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r3r3k"]
+albedo_color = Color(1, 0.5019608, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_r3r3k"]
+material = SubResource("StandardMaterial3D_r3r3k")
+size = Vector3(2, 0.5, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_blcw0"]
+albedo_color = Color(0, 0, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_blcw0"]
+material = SubResource("StandardMaterial3D_blcw0")
+size = Vector3(0.1, 0.5, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vte5o"]
+size = Vector3(26, 1, 14)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_po8fv"]
+size = Vector3(26, 1, 7)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ub8w1"]
+size = Vector3(28, 1, 7)
+
+[node name="root" type="Node3D" unique_id=171305137]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=879330178]
+environment = SubResource("Environment_sq7yr")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=634887019]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 200, 0)
+light_energy = 0.5
+shadow_enabled = true
+shadow_normal_bias = 10.0
+
+[node name="RaceManager" type="Node" parent="." unique_id=1542124260 node_paths=PackedStringArray("car", "audio_player", "camera", "current_time_label", "race_time_label", "sector_label", "speed_label", "distance_label", "lap_count_label", "countdown", "controls", "medal_result")]
+script = ExtResource("22_po8fv")
+car = NodePath("../Car")
+audio_player = NodePath("../Car/EngineSound")
+camera = NodePath("../Car/CameraPivot/Chasecam")
+current_time_label = NodePath("../HUD/CurrentTimeLabel")
+race_time_label = NodePath("../HUD/Times/RaceTimeLabel")
+sector_label = NodePath("../HUD/Times/SectorLabel")
+speed_label = NodePath("../HUD/SpeedLabel")
+distance_label = NodePath("../HUD/DistanceLabel")
+lap_count_label = NodePath("../HUD/LapCountLabel")
+countdown = NodePath("../HUD/CountdownLabel")
+controls = NodePath("../HUD/Controls")
+medal_result = NodePath("../HUD/MedalResult")
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=439265187]
+
+[node name="Fullscreen" type="Button" parent="HUD" unique_id=195106814]
+modulate = Color(1, 1, 1, 0)
+offset_right = 1146.0
+offset_bottom = 644.0
+script = ExtResource("7_po8fv")
+
+[node name="Times" type="VBoxContainer" parent="HUD" unique_id=153672351]
+offset_left = 2.0
+offset_top = 18.0
+offset_right = 1149.0
+offset_bottom = 196.0
+alignment = 1
+
+[node name="SectorLabel" type="Label" parent="HUD/Times" unique_id=53474965]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5019608)
+theme_override_font_sizes/font_size = 32
+text = "0:00.000"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RaceTimeLabel" type="Label" parent="HUD/Times" unique_id=192492172]
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5019608)
+theme_override_font_sizes/font_size = 32
+text = "0:00.000"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Medals" type="VBoxContainer" parent="HUD" unique_id=624691012]
+offset_left = 12.0
+offset_top = 12.0
+offset_right = 152.0
+offset_bottom = 160.0
+
+[node name="Author" type="HBoxContainer" parent="HUD/Medals" unique_id=302690018]
+layout_mode = 2
+
+[node name="Medal" type="TextureRect" parent="HUD/Medals/Author" unique_id=1972253753]
+modulate = Color(0, 0.5019608, 0, 1)
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+texture = ExtResource("2_r3r3k")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Time" type="Label" parent="HUD/Medals/Author" unique_id=583028156]
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5019608)
+theme_override_font_sizes/font_size = 24
+text = " 2:52.342"
+
+[node name="Gold" type="HBoxContainer" parent="HUD/Medals" unique_id=1951227116]
+layout_mode = 2
+
+[node name="Medal" type="TextureRect" parent="HUD/Medals/Gold" unique_id=130357162]
+modulate = Color(1, 0.84313726, 0, 1)
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+texture = ExtResource("2_r3r3k")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Time" type="Label" parent="HUD/Medals/Gold" unique_id=471578189]
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5019608)
+theme_override_font_sizes/font_size = 24
+text = " 2:57.500"
+
+[node name="Silver" type="HBoxContainer" parent="HUD/Medals" unique_id=1221190276]
+layout_mode = 2
+
+[node name="Medal" type="TextureRect" parent="HUD/Medals/Silver" unique_id=740510680]
+modulate = Color(0.8117647, 0.8117647, 0.92156863, 1)
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+texture = ExtResource("2_r3r3k")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Time" type="Label" parent="HUD/Medals/Silver" unique_id=327492814]
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5019608)
+theme_override_font_sizes/font_size = 24
+text = " 3:01.000"
+
+[node name="Bronze" type="HBoxContainer" parent="HUD/Medals" unique_id=1812224790]
+layout_mode = 2
+
+[node name="Medal" type="TextureRect" parent="HUD/Medals/Bronze" unique_id=944359968]
+modulate = Color(0.9607843, 0.47843137, 0.13333334, 1)
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+texture = ExtResource("2_r3r3k")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Time" type="Label" parent="HUD/Medals/Bronze" unique_id=814385454]
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5019608)
+theme_override_font_sizes/font_size = 24
+text = " 3:04.400"
+
+[node name="DistanceLabel" type="Label" parent="HUD" unique_id=2089162671]
+offset_left = 1053.0
+offset_top = 574.0
+offset_right = 1141.0
+offset_bottom = 597.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5019608)
+text = "00000 m"
+horizontal_alignment = 2
+
+[node name="CurrentTimeLabel" type="Label" parent="HUD" unique_id=986421384]
+offset_left = 1.0
+offset_top = 586.0
+offset_right = 1153.0
+offset_bottom = 653.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5019608)
+theme_override_font_sizes/font_size = 48
+text = "0:00.000"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SpeedLabel" type="Label" parent="HUD" unique_id=1673879473]
+offset_left = 1050.0
+offset_top = 588.0
+offset_right = 1144.0
+offset_bottom = 655.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5019608)
+theme_override_font_sizes/font_size = 48
+text = "000"
+horizontal_alignment = 2
+
+[node name="LapCountLabel" type="Label" parent="HUD" unique_id=149502590]
+offset_left = 1092.0
+offset_top = 54.0
+offset_right = 1141.0
+offset_bottom = 99.0
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5019608)
+theme_override_font_sizes/font_size = 32
+text = "1/3"
+
+[node name="CountdownLabel" type="Label" parent="HUD" unique_id=1664360666]
+offset_left = 3.0
+offset_top = 1.0
+offset_right = 1153.0
+offset_bottom = 645.0
+theme_override_colors/font_color = Color(0, 0.2509804, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5019608)
+theme_override_font_sizes/font_size = 128
+text = "3"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Controls" type="VBoxContainer" parent="HUD" unique_id=179012354]
+offset_left = 7.0
+offset_top = 477.0
+offset_right = 254.0
+offset_bottom = 706.0
+
+[node name="Drive" type="HBoxContainer" parent="HUD/Controls" unique_id=575342135]
+layout_mode = 2
+
+[node name="Key" type="TextureRect" parent="HUD/Controls/Drive" unique_id=29634974]
+custom_minimum_size = Vector2(94.05, 14.745)
+layout_mode = 2
+texture = ExtResource("3_blcw0")
+expand_mode = 5
+stretch_mode = 5
+
+[node name="Action" type="Label" parent="HUD/Controls/Drive" unique_id=1179909124]
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5019608)
+theme_override_font_sizes/font_size = 32
+text = " - Drive"
+
+[node name="Brake" type="HBoxContainer" parent="HUD/Controls" unique_id=722477927]
+layout_mode = 2
+
+[node name="Key" type="TextureRect" parent="HUD/Controls/Brake" unique_id=297896584]
+custom_minimum_size = Vector2(94.49, 14.745)
+layout_mode = 2
+texture = ExtResource("4_3dlgs")
+expand_mode = 5
+stretch_mode = 5
+
+[node name="Action" type="Label" parent="HUD/Controls/Brake" unique_id=163833824]
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5019608)
+theme_override_font_sizes/font_size = 32
+text = " - Brake"
+
+[node name="Reset" type="HBoxContainer" parent="HUD/Controls" unique_id=1305063653]
+layout_mode = 2
+
+[node name="Key" type="TextureRect" parent="HUD/Controls/Reset" unique_id=2115287356]
+custom_minimum_size = Vector2(94.965, 25.34)
+layout_mode = 2
+texture = ExtResource("5_vte5o")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="Action" type="Label" parent="HUD/Controls/Reset" unique_id=1061812663]
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5019608)
+theme_override_font_sizes/font_size = 32
+text = " - Reset"
+
+[node name="MedalResult" type="TextureRect" parent="HUD" unique_id=879734538]
+visible = false
+offset_left = 449.0
+offset_top = 267.0
+offset_right = 705.0
+offset_bottom = 397.0
+texture = ExtResource("6_vte5o")
+expand_mode = 3
+stretch_mode = 5
+
+[node name="Car" type="RigidBody3D" parent="." unique_id=1491395218 node_paths=PackedStringArray("wheels", "brake_light_mesh")]
+transform = Transform3D(-1.07284414e-07, 0, -1, 0, 1, 0, 1, 0, -1.07284414e-07, 6, 0.25000787, 6.4370647e-07)
+mass = 50.0
+physics_material_override = SubResource("PhysicsMaterial_r3r3k")
+contact_monitor = true
+max_contacts_reported = 5
+linear_damp_mode = 1
+script = ExtResource("14_qt76e")
+wheels = [NodePath("Tires/FL"), NodePath("Tires/FR"), NodePath("Tires/RL"), NodePath("Tires/RR")]
+brake_light_mesh = NodePath("CarMesh/Node_0/Assembly~1/3DGeom~6")
+brake_light_material = ExtResource("9_blcw0")
+max_turn_curve = SubResource("Curve_ub8w1")
+drag_curve = SubResource("Curve_eji0w")
+
+[node name="CarMesh" parent="Car" unique_id=2132534011 instance=ExtResource("5_blcw0")]
+transform = Transform3D(1.9470718e-07, 0, -1, 0, 1, 0, 1, 0, 1.9470718e-07, -1, -0.249, -2)
+
+[node name="Collider" type="CollisionShape3D" parent="Car" unique_id=1561586592]
+visible = false
+shape = SubResource("BoxShape3D_r3r3k")
+
+[node name="DebugMesh" type="MeshInstance3D" parent="Car/Collider" unique_id=567259687]
+mesh = SubResource("BoxMesh_r3r3k")
+
+[node name="Tires" type="Node3D" parent="Car" unique_id=1145194150]
+
+[node name="FL" type="Node3D" parent="Car/Tires" unique_id=1485123297]
+process_physics_priority = -1
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.75, 0, -1.25)
+
+[node name="Mesh" parent="Car/Tires/FL" unique_id=1246872628 instance=ExtResource("5_50g4q")]
+transform = Transform3D(-4.371138e-08, 0, -0.99999994, 0, 1, 0, 0.99999994, 0, -4.371138e-08, -0.050000012, 0, -0.10000038)
+
+[node name="DebugMesh" type="MeshInstance3D" parent="Car/Tires/FL" unique_id=43935084]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+visible = false
+mesh = SubResource("BoxMesh_blcw0")
+
+[node name="FR" type="Node3D" parent="Car/Tires" unique_id=17233925]
+process_physics_priority = -1
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.75, 0, -1.25)
+
+[node name="Mesh" parent="Car/Tires/FR" unique_id=1093433107 instance=ExtResource("5_50g4q")]
+transform = Transform3D(1.3113416e-07, 0, 0.9999999, 0, 1, 0, -0.9999999, 0, 1.3113416e-07, 0.050000012, 0, -0.099999905)
+
+[node name="DebugMesh" type="MeshInstance3D" parent="Car/Tires/FR" unique_id=1673475784]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+visible = false
+mesh = SubResource("BoxMesh_blcw0")
+
+[node name="RL" type="Node3D" parent="Car/Tires" unique_id=80675170]
+process_physics_priority = -1
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.75, 0, 1.25)
+
+[node name="RR" type="Node3D" parent="Car/Tires" unique_id=1745808139]
+process_physics_priority = -1
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.75, 0, 1.25)
+
+[node name="CameraPivot" type="Node3D" parent="Car" unique_id=864264323]
+
+[node name="Chasecam" type="Camera3D" parent="Car/CameraPivot" unique_id=669669800]
+transform = Transform3D(7.54979e-08, 0, -1, 0, 1, 0, 1, 0, 7.54979e-08, 0, 0, 0)
+top_level = true
+current = true
+script = ExtResource("20_3dlgs")
+
+[node name="Freecam" type="Camera3D" parent="Car" unique_id=1407337051]
+transform = Transform3D(-0.0026224877, -0.059896857, 0.99820113, 0.0013113554, 0.9982035, 0.05990044, -0.9999957, 0.0014660846, -0.0025392303, 0, 0, 0)
+script = ExtResource("13_blcw0")
+
+[node name="EngineSound" type="AudioStreamPlayer" parent="Car" unique_id=544739294 node_paths=PackedStringArray("target")]
+stream = ExtResource("10_sq7yr")
+volume_db = -40.0
+autoplay = true
+playback_type = 1
+script = ExtResource("10_qt76e")
+target = NodePath("..")
+
+[node name="Track" parent="." unique_id=1173832854 instance=ExtResource("20_vte5o")]
+
+[node name="SectorLines" type="Node3D" parent="." unique_id=729654130]
+
+[node name="Finish" type="Node3D" parent="SectorLines" unique_id=172885053]
+script = ExtResource("21_vte5o")
+sector_name = "Finish Line"
+
+[node name="Area3D" type="Area3D" parent="SectorLines/Finish" unique_id=535077653]
+
+[node name="S1" type="CollisionShape3D" parent="SectorLines/Finish/Area3D" unique_id=253628302]
+transform = Transform3D(-4.371139e-08, -1, 4.371139e-08, 0, -4.371139e-08, -1, 1, -4.371139e-08, 1.9106855e-15, 16, 5, 0)
+shape = SubResource("BoxShape3D_vte5o")
+
+[node name="Sector1" type="Node3D" parent="SectorLines" unique_id=832688045]
+transform = Transform3D(1.0000001, 0, 3.5527137e-15, 0, 1.0000001, -8.881784e-16, 0, 0, 1, 302, -21, 0)
+script = ExtResource("21_vte5o")
+sector_name = "Sector 1"
+
+[node name="Area3D" type="Area3D" parent="SectorLines/Sector1" unique_id=1650072327]
+
+[node name="S2" type="CollisionShape3D" parent="SectorLines/Sector1/Area3D" unique_id=994005004]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+shape = SubResource("BoxShape3D_po8fv")
+debug_color = Color(0.97157675, 0, 0.45025384, 0.41960785)
+
+[node name="Sector2" type="Node3D" parent="SectorLines" unique_id=1829421238]
+transform = Transform3D(-4.371139e-08, 0, 1, 0.25881904, 0.9659258, 1.131334e-08, -0.9659258, 0.25881904, -4.222196e-08, 144, 62, -543)
+script = ExtResource("21_vte5o")
+sector_name = "Sector 2"
+
+[node name="Area3D" type="Area3D" parent="SectorLines/Sector2" unique_id=922545160]
+
+[node name="S2" type="CollisionShape3D" parent="SectorLines/Sector2/Area3D" unique_id=1789533569]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+shape = SubResource("BoxShape3D_po8fv")
+debug_color = Color(0.97157675, 0, 0.45025384, 0.41960785)
+
+[node name="Sector3" type="Node3D" parent="SectorLines" unique_id=1079054065]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, -21, -224)
+script = ExtResource("21_vte5o")
+sector_name = "Sector 3"
+
+[node name="Area3D" type="Area3D" parent="SectorLines/Sector3" unique_id=417493266]
+
+[node name="S3" type="CollisionShape3D" parent="SectorLines/Sector3/Area3D" unique_id=99959035]
+transform = Transform3D(3.5527137e-15, -1, 1.3113416e-07, 4.371139e-08, 1.3113416e-07, 1, -1, 3.5527137e-15, 4.371139e-08, 0, 0, 0)
+shape = SubResource("BoxShape3D_ub8w1")
+
+[node name="Sector4" type="Node3D" parent="SectorLines" unique_id=655941482]
+transform = Transform3D(-4.371139e-08, 0, 1, 0.25881904, 0.9659258, 1.131334e-08, -0.9659258, 0.25881904, -4.222196e-08, -272, 39, -607)
+script = ExtResource("21_vte5o")
+sector_name = "Sector 4"
+
+[node name="Area3D" type="Area3D" parent="SectorLines/Sector4" unique_id=1421617877]
+
+[node name="S2" type="CollisionShape3D" parent="SectorLines/Sector4/Area3D" unique_id=458408963]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+shape = SubResource("BoxShape3D_po8fv")
+debug_color = Color(0.97157675, 0, 0.45025384, 0.41960785)
+
+[node name="Sector5" type="Node3D" parent="SectorLines" unique_id=1685812339]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -240, -21, -224)
+script = ExtResource("21_vte5o")
+sector_name = "Sector 5"
+
+[node name="Area3D" type="Area3D" parent="SectorLines/Sector5" unique_id=40814573]
+
+[node name="S3" type="CollisionShape3D" parent="SectorLines/Sector5/Area3D" unique_id=845386785]
+shape = SubResource("BoxShape3D_ub8w1")
+
+[node name="BoostPads" type="Node3D" parent="." unique_id=420737748]
+
+[node name="Boost1" type="Node3D" parent="BoostPads" unique_id=2016134098]
+transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 175, 11, -337)
+script = ExtResource("14_sq7yr")
+
+[node name="Area3D" type="Area3D" parent="BoostPads/Boost1" unique_id=689077867]
+
+[node name="B1" type="CollisionShape3D" parent="BoostPads/Boost1/Area3D" unique_id=287940466]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+shape = SubResource("BoxShape3D_po8fv")
+debug_color = Color(0.97157675, 0, 0.45025384, 0.41960785)
+
+[node name="Boost2" type="Node3D" parent="BoostPads" unique_id=131447134]
+transform = Transform3D(1, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, -240, -21, -207)
+script = ExtResource("14_sq7yr")
+
+[node name="Area3D" type="Area3D" parent="BoostPads/Boost2" unique_id=1561149935]
+
+[node name="B2" type="CollisionShape3D" parent="BoostPads/Boost2/Area3D" unique_id=397597392]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+shape = SubResource("BoxShape3D_po8fv")
+debug_color = Color(0.97157675, 0, 0.45025384, 0.41960785)
