@@ -101,23 +101,56 @@ func _physics_process(delta: float) -> void:
 		apply_force(drag_force + braking_force, force_pos)
 		if show_debug: DebugDraw3D.draw_arrow_ray(global_position + force_pos, drag_force + braking_force, 0.01, Color.ORANGE, 0.3, true)
 
+const WALL_HIT_COOLDOWN: float = 0.3
+const WALL_HIT_MIN_VELOCITY: float = 0.7
+var _last_major_wall_hit_timestamp: float = 0.0
+var _registered_wall_collisions: Array[int]
+var _pre_collision_velocity: Vector3 = Vector3.ZERO
+signal entered_major_wall_collision(impact_velocity: float)
+signal exited_wall_collision()
+signal entered_minor_wall_collision(impact_velocity: float)
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	is_grounded = false
-	var hit_wall := false
 	var max_impact := 0.0
-	# Loop through all current collisions
+
+	var current_contact_ids: Array[int] = []
 	for i in state.get_contact_count():
-		var normal := state.get_contact_local_normal(i)
-		if normal.y > 0.5: 
+		var normal: Vector3 = state.get_contact_local_normal(i)
+		if abs(normal.y) < 0.3:  # wall only
+			current_contact_ids.append(state.get_contact_collider_id(i))
+
+	for i in state.get_contact_count():
+		var collider_id: int = state.get_contact_collider_id(i)
+		var normal: Vector3 = state.get_contact_local_normal(i)
+
+		if normal.y > 0.5:
 			is_grounded = true
-			
-		var is_wall: bool = abs(normal.y) < 0.3
-		if is_wall:
-			hit_wall = true
-			var impact_velocity: float = abs(_prev_linear_velocity.dot(normal))
-			if impact_velocity > max_impact: max_impact = impact_velocity
-	
-	if hit_wall and max_impact > 0.5:
+
+		if abs(normal.y) < 0.3:
+			var impact_velocity: float = abs(_pre_collision_velocity.dot(normal))
+			if impact_velocity > max_impact:
+				max_impact = impact_velocity
+
+			if not _registered_wall_collisions.has(collider_id):
+				_registered_wall_collisions.append(collider_id)
+
+			var now := Time.get_ticks_msec() / 1000.0
+			if impact_velocity > WALL_HIT_MIN_VELOCITY and (now - _last_major_wall_hit_timestamp) > WALL_HIT_COOLDOWN:
+				_last_major_wall_hit_timestamp = now
+				entered_major_wall_collision.emit(impact_velocity)
+			elif impact_velocity < WALL_HIT_MIN_VELOCITY:
+				if (impact_velocity > 0.1):
+					entered_minor_wall_collision.emit(impact_velocity)
+
+	var exited_ids: Array[int] = []
+	for registered_id: int in _registered_wall_collisions:
+		if not current_contact_ids.has(registered_id):
+			exited_ids.append(registered_id)
+	for exited_id: int in exited_ids:
+		_registered_wall_collisions.erase(exited_id)
+		exited_wall_collision.emit()
+
+	if max_impact > 0.5:
 		var car_forward_dir := -global_basis.z
 		var current_forward_speed := state.linear_velocity.dot(car_forward_dir)
 		var speed_reduction := max_impact * wall_penalty_multiplier
@@ -125,13 +158,18 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		var actual_reduction := current_forward_speed - new_forward_speed
 		state.linear_velocity -= car_forward_dir * actual_reduction
 		state.angular_velocity *= wall_spin_damping
-	_prev_linear_velocity = state.linear_velocity
-	
+
 	if not is_grounded:
 		linear_damp = 0.0
-		var pitch_force := -global_basis.x * air_pitch_torque * mass
+		var pitch_force: Vector3 = -global_basis.x * air_pitch_torque * mass
 		apply_torque(pitch_force)
-		var extra_gravity_force := Vector3.DOWN * extra_gravity * mass
+		var extra_gravity_force: Vector3 = Vector3.DOWN * extra_gravity * mass
 		apply_central_force(extra_gravity_force)
 	else:
 		linear_damp = 0.1
+	
+	## Frontal high speed collisions are already processed in THE START of this frame
+	## so to take the real/accurate pre-collision velocity
+	## we fetch it from the previous frame.
+	## This is where the accurate velocity is stored for the aforementioned fetching to be used far above :)
+	_pre_collision_velocity = state.linear_velocity
