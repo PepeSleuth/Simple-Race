@@ -67,7 +67,7 @@ size = Vector3(0.1, 0.5, 0.5)
 size = Vector3(26, 1, 14)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_po8fv"]
-size = Vector3(26, 1, 7)
+size = Vector3(28, 1, 7)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ub8w1"]
 size = Vector3(28, 1, 7)
@@ -429,7 +429,7 @@ sector_name = "Sector 1"
 [node name="Area3D" type="Area3D" parent="SectorLines/Sector1" unique_id=1650072327]
 
 [node name="S2" type="CollisionShape3D" parent="SectorLines/Sector1/Area3D" unique_id=994005004]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 1.3164673, 0, 0)
 shape = SubResource("BoxShape3D_po8fv")
 debug_color = Color(0.97157675, 0, 0.45025384, 0.41960785)
 
